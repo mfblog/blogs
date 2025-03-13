@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from "node:url";
 import { getSidebar } from "./utils/getSidebar";
 
 export default defineConfig({
+  base: '/', //网站部署的路径，默认根目录
   // 标签上显示的网站标题
   title: "茶茶吖",
   titleTemplate: "茶茶吖博客",
