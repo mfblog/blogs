@@ -4,8 +4,8 @@
   >
     <p class="text-sm font-medium">{{ footer.copyright }}</p>
     <p class="text-sm font-medium">
-      Theme |
-      <a href="https://github.com/ZbWeR/easy-vitepress-blog">easy-vitepress-blog</a>
+      Github |
+      <a href="https://github.com/mfblog/blogs">茶茶吖笔记</a>
     </p>
   </footer>
 </template>

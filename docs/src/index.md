@@ -4,7 +4,7 @@ sidebar: false
 
 hero:
   title: "Document"
-  subTitle: "📚 欢迎来到本项目的使用说明书"
+  subTitle: "📚 欢迎来到茶茶的笔记"
 
 types:
   - name: "Alpine 笔记"
@@ -23,7 +23,7 @@ types:
 ---
 
 <script setup>
-import BlogArchive from '../../.vitepress/views/BlogArchive.vue'
+import BlogArchive from '../.vitepress/views/BlogArchive.vue'
 </script>
 
 <BlogArchive/>

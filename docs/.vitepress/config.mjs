@@ -23,16 +23,16 @@ export default defineConfig({
     logo: "/logo.svg",
     // 顶部导航栏
     nav: [
-      { text: "👋 About", link: "/AboutMe.md" },
+      // { text: "👋 About", link: "/AboutMe.md" },
       { text: "💭 Blogs", link: "/Notes/index" },
-      { text: "🦄 Projects", link: "Projects.md" },
-      { text: "👫 Friends", link: "Friends.md" },
+      // { text: "🦄 Projects", link: "Projects.md" },
+      // { text: "👫 Friends", link: "Friends.md" },
     ],
     // 顶部导航栏左侧的社交平台跳转
     socialLinks: [{ icon: "github", link: "https://github.com/ZbWeR" }],
     // 首页底部版权声明
     footer: {
-      copyright: "Copyright © 2023-present zbwer",
+      copyright: "Copyright © 2024-present 茶茶吖🏔️",
     },
     // 【文章页面左侧导航】
     sidebar: {
