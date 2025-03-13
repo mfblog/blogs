@@ -56,6 +56,9 @@ jobs:
 
       # 使用 最新的 PNPM
       # 你也可以指定为具体的版本
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
