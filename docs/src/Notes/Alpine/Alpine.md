@@ -6,87 +6,81 @@ tags: "Alpine/Docker"
 updateTime: "2024-12-19 08:06:32"
 ---
 
-## 安装常用软件
+## 基础软件套装
+::: tip 基础软件套装
+推荐安装以下基础工具包，包含系统管理、网络调试等常用组件：
 ```bash
-apk add openssh vim bash util-linux bash bash-doc bash-completion curl net-tools
-```
-## Alpine相关命令
+apk add openssh vim bash util-linux bash-doc bash-completion curl net-tools
+
+:::
+
+## 🐧 AlpineLinux 服务管理
+
+::: tip 服务控制三连击
+掌握OpenRC服务管理核心命令：
 ```bash
-启动服务
-rc-service 服务名称 start
+# 启动/重启/查看服务
+rc-service {服务名} start      # 如 sshd/docker
+rc-service {服务名} restart
+rc-service {服务名} status
 
-重启服务
-rc-service 服务名称 restart
+# 服务自启管理
+rc-update add {服务名}        # 添加自启
+rc-update del {服务名}        # 移除自启
+rc-status -a                 # 查看所有服务状态
 
-查看服务状态
-rc-service 服务名称 status
-```
+:::
 
-## Alpine安装SSH服务,并开启root登录
+## 🔐 SSH服务配置
+
+::: warning 安全注意
+生产环境建议创建专用运维账户，以下root登录方式仅限测试环境使用
+:::
+
 ```bash
+# 安装SSH服务套件
+apk update && apk add openssh-server
 
-apk update
-
-apk add openssh-server
-
+# 服务生命周期管理
 rc-service sshd start
-
-设置开机启动
 rc-update add sshd
 
-删除开机启动服务
-rc-update del sshd
-
-开放Root登录
+# 启用root登录（危险操作！）
 echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
-
-重启服务
 rc-service sshd restart
-
-显示所有服务
-rc-status -a
-```
-## Alpine安装docker && docker-compose
-### 安装docker
-
-```bash
-vim /etc/apk/repositories
-```
-### 去除 `community` 这一行的注释
-```bash
-http://mirrors.tuna.tsinghua.edu.cn/alpine/v3.21/community
-```
-### 更新包索引
-```bash
-apk update
-```
-### 安装docker
-```bash
-apk add docker
 ```
 
-### docker添加到开机自启动
-```bash
-rc-update add docker boot
+## 🐳 Docker生态安装
+::: tip 镜像加速
+建议在/etc/docker/daemon.json配置镜像加速源，例如：
+```json
+{
+  "registry-mirrors": ["https://<your-mirror>"]
+}
 ```
-### 启动docker服务
+:::
+
 ```bash
-service docker start
+# 启用社区仓库
+sed -i '/community/s/^#//' /etc/apk/repositories
+
+# 安装Docker组件
+apk update && apk add docker
+rc-update add docker boot && service docker start
 ```
-### 验证安装
+## Docker Compose 部署
+::: details 高级部署步骤
 ```bash
-docker --version
-```
-## 安装docker-compose
-### 下载 Docker Compose
-```bash
-curl -L 'https://github.com/docker/compose/releases/download/v2.32.0/docker-compose-linux-x86_64' -o /usr/local/bin/docker-compose
-```
-### 赋予 Docker Compose 执行权限
-```bash
+# 获取最新版（示例为v2.32.0）
+curl -L https://github.com/docker/compose/releases/download/v2.32.0/docker-compose-linux-x86_64 \
+  -o /usr/local/bin/docker-compose
+
+# 权限设置
 chmod +x /usr/local/bin/docker-compose
-```
-### 验证安装
-```bash
 docker-compose --version
 ```
+:::
+
+::: warning 版本兼容性
+建议保持Docker Compose与Docker版本匹配，可通过apk search docker-compose查看仓库可用版本
+:::
