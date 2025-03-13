@@ -8,13 +8,13 @@ hero:
 
 types:
   - name: "Alpine 笔记"
-    desc: "How to Use"
+    desc: "Click to Watch"
     link: "/Notes/Alpine/Alpine"
     icon: "📄"
-  # - name: "使用指南"
-  #   desc: "How to Use"
-  #   link: "/Notes/0tutorial/quickstart"
-  #   icon: "✨"
+  - name: "Linux 笔记"
+    desc: "Click to Watch"
+    link: "/Notes/Linux/Linux"
+    icon: "🐧"
   # - name: "面经分享"
   #   desc: "interview experiences"
   #   link: "/Notes/Interviews/"

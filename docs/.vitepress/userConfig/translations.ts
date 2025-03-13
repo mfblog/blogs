@@ -6,5 +6,6 @@
  * ! 并在该文件中将其名称进行替换。
  */
 export const fileName2Title: Record<string, string> = {
-  "Alpine": "🏷️ 文章目录"
+  "Alpine": "🏷️ 文章目录",
+  "Linux": "🖥️ Linux 笔记"
 };
