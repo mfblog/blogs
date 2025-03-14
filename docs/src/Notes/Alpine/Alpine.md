@@ -11,7 +11,7 @@ updateTime: "2024-12-11 08:06:32"
 推荐安装以下基础工具包，包含系统管理、网络调试等常用组件：
 ```bash
 apk add openssh vim bash util-linux bash-doc bash-completion curl net-tools
-
+```
 :::
 
 ## 🐧 AlpineLinux 服务管理
@@ -28,7 +28,7 @@ rc-service {服务名} status
 rc-update add {服务名}        # 添加自启
 rc-update del {服务名}        # 移除自启
 rc-status -a                 # 查看所有服务状态
-
+```
 :::
 
 ## 🔐 SSH服务配置
