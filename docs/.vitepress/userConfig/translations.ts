@@ -7,5 +7,5 @@
  */
 export const fileName2Title: Record<string, string> = {
   "Alpine": "🏷️ 文章目录",
-  "Linux": "🖥️ Linux 笔记"
+  // "Linux": "🖥️ Linux 笔记"
 };
