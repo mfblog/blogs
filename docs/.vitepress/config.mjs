@@ -48,6 +48,10 @@ export default defineConfig({
   },
   // 数学公式支持
   markdown: {
+    image: {
+      // 开启图片懒加载
+      lazyLoading: true
+    },
     math: true,
   },
   // !请勿修改

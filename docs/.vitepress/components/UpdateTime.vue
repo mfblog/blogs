@@ -1,6 +1,6 @@
 <template>
   <div v-if="lastUpdated" class="py-1 text-sm font-medium">
-    📝 Last updated: {{ lastUpdated }}
+    📝 最后更新时间 : {{ lastUpdated }}
   </div>
 </template>
 
