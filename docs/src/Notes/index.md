@@ -9,7 +9,7 @@ hero:
 types:
   - name: "Alpine 笔记"
     desc: "Click to Watch"
-    link: "/Notes/Alpine/Alpine"
+    link: "/Notes/Alpine/Linux"
     icon: "📄"
   # - name: "Linux 笔记"
   #   desc: "Click to Watch"
