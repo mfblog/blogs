@@ -62,7 +62,7 @@ openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key \
   -CAcreateserial -days 3650 -sha256 -out client.crt
 ```
 ## 📁 证书文件体系
-```tree
+```bash
 TLS_CERTIFICATES/
 ├── ca/
 │   ├── ca.crt       # 根证书（分发各节点）
