@@ -9,11 +9,11 @@ updateTime: "2024-12-12 13:46:32"
 ## 📡 网络基础配置
 ::: tip 多平台支持
 ```json
-1.1.1.1
+159.138.0.133
+
+192.168.100.0/24
 
 192.168.88.0/24
-
-192.168.88.6
 ```
 :::
 
@@ -33,49 +33,110 @@ apt install wireguard iptables -y
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 sysctl -p
 ```
-## 服务端配置
+## 中转服务端配置
 ::: danger 安全提醒
 请妥善保管PrivateKey并定期更换密钥
 ```toml
 [Interface]
-Address = 192.168.66.1/32
-ListenPort = 28385
-PrivateKey = KMogtlOWTKnClS0u0nBlSFwKc1/y9PdvTX9uA04Jr0o=
+PrivateKey = KMZcc5CyJMctcG1FDgiaBzzrb0hjhgkjUKy426tJn18=
+Address = 10.0.0.100/16
+ListenPort = 51820
 
-# 流量转发规则
-PostUp = iptables -I FORWARD -s 192.168.66.0/24 -i wg0 -d 192.168.66.0/24 -j ACCEPT
-PostUp = iptables -I FORWARD -s 192.168.66.0/24 -i wg0 -d 192.168.88.0/24 -j ACCEPT
-PostUp = iptables -I FORWARD -s 192.168.88.0/24 -i wg0 -d 192.168.66.0/24 -j ACCEPT
-PostDown = iptables -D FORWARD -s 192.168.66.0/24 -i wg0 -d 192.168.66.0/24 -j ACCEPT
-PostDown = iptables -D FORWARD -s 192.168.66.0/24 -i wg0 -d 192.168.88.0/24 -j ACCEPT
-PostDown = iptables -D FORWARD -s 192.168.88.0/24 -i wg0 -d 192.168.66.0/24 -j ACCEPT
+PostUp = sysctl -w net.ipv4.ip_forward=1; iptables -A FORWARD -i wg0 -j ACCEPT
+PostDown = sysctl -w net.ipv4.ip_forward=0; iptables -D FORWARD -i wg0 -j ACCEPT
 
+# 办公室
 [Peer]
-PublicKey = ekN9E8q+kG/D5GsBPj1zL3ouWJ+Jy0hNB5EgG7luZmE=
-AllowedIPs = 192.168.66.2/32, 192.168.88.0/24
+PublicKey = va1+83gBmJ1gig+dh3YeFel5W/HOxHVWQ2v6M3ZgUic=
+AllowedIPs = 10.0.0.3/32
 
+# 手机
 [Peer]
-PublicKey = Wt5cT7fQH/b7c4bpE6o66ndJ/Dtrx+9NG/kket/U130=
-AllowedIPs = 192.168.66.3/32
+PublicKey = 05qATVYj0WVlRBeWc+C26AQGQjUCXobWkCdpjtwzHy4=
+AllowedIPs = 10.0.0.4/32
+:::
+
+::: details 添加各自真实的局域网网段未测试
+```toml
+[Interface]
+PrivateKey = KMZcc5CyJMctcG1FDgiaBzzrb0hjhgkjUKy426tJn18=
+Address = 10.0.0.100/16
+ListenPort = 51820
+
+PostUp = sysctl -w net.ipv4.ip_forward=1; iptables -A FORWARD -i wg0 -j ACCEPT
+PostDown = sysctl -w net.ipv4.ip_forward=0; iptables -D FORWARD -i wg0 -j ACCEPT
+
+# 办公室（Office）Peer：包括办公室虚拟 IP 和局域网网段
+[Peer]
+PublicKey = va1+83gBmJ1gig+dh3YeFel5W/HOxHVWQ2v6M3ZgUic=
+AllowedIPs = 10.0.0.3/32, 192.168.100.0/24
+
+# 手机（Mobile）Peer：包括手机虚拟 IP 和局域网网段
+[Peer]
+PublicKey = 05qATVYj0WVlRBeWc+C26AQGQjUCXobWkCdpjtwzHy4=
+AllowedIPs = 10.0.0.4/32, 192.168.88.0/24
+
+```
 :::
 
 ## 客户端配置
-### Linux客户端
+### 办公室客户端
 ```toml [/etc/wireguard/wg0.conf]
 [Interface]
-Address = 192.168.66.2/32
-PrivateKey = EJ3hMqMznqlSRQFUaAbgNfCYLviGcF+pVf5wbJII80k=
-
-# NAT规则
-PostUp = iptables -t nat -A POSTROUTING -s 192.168.66.0/24 -j SNAT --to-source 192.168.88.170
-PostDown = iptables -t nat -D POSTROUTING -s 192.168.66.0/24 -j SNAT --to-source 192.168.88.170
+PrivateKey = cG0MxhUTvjg+oh3PCiZxBSHnpHHKQR3sxeUxtkYXjmA=
+ListenPort = 51820
+Address = 10.0.0.3/16
 
 [Peer]
-PublicKey = +e03qUCb730zy2db+ViCCvzbvW1xOZyk8+QSRk4GbCo=
-Endpoint = 1.1.1.1:28385
-AllowedIPs = 192.168.66.0/24
-PersistentKeepalive = 25
+PublicKey = gXWXiB/PKNyEn4IlBeu+ZsYwezt7FnNAyJAR9frWinY=
+AllowedIPs = 10.0.0.0/16
+Endpoint = 159.138.0.133:51820
+PersistentKeepalive = 15
 ```
+::: details 添加各自真实的局域网网段未测试
+```toml
+[Interface]
+PrivateKey = cG0MxhUTvjg+oh3PCiZxBSHnpHHKQR3sxeUxtkYXjmA=
+Address = 10.0.0.3/16
+ListenPort = 51820
+
+[Peer]
+# 中转服务器
+PublicKey = gXWXiB/PKNyEn4IlBeu+ZsYwezt7FnNAyJAR9frWinY=
+Endpoint = 159.138.0.133:51820
+AllowedIPs = 10.0.0.0/16, 192.168.88.0/24
+PersistentKeepalive = 15
+```
+:::
+
+### 手机客户端(其他设备)
+```toml [/etc/wireguard/wg0.conf]
+[Interface]
+PrivateKey = oHhBqbTGicqoHbZ+mWvcFcX5e/dodfDAZb0zk6ASoX0=
+Address = 10.0.0.4/16
+ListenPort = 51820
+
+[Peer]
+PublicKey = gXWXiB/PKNyEn4IlBeu+ZsYwezt7FnNAyJAR9frWinY=
+Endpoint = 159.138.0.133:51820
+AllowedIPs = 10.0.0.0/16
+PersistentKeepalive = 15
+```
+::: details 添加各自真实的局域网网段未测试
+```toml
+[Interface]
+PrivateKey = oHhBqbTGicqoHbZ+mWvcFcX5e/dodfDAZb0zk6ASoX0=
+Address = 10.0.0.4/16
+ListenPort = 51820
+
+[Peer]
+# 中转服务器
+PublicKey = gXWXiB/PKNyEn4IlBeu+ZsYwezt7FnNAyJAR9frWinY=
+Endpoint = 159.138.0.133:51820
+AllowedIPs = 10.0.0.0/16, 192.168.100.0/24
+PersistentKeepalive = 15
+```
+:::
 
 ## 服务管理
 ::: code-group
