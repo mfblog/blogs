@@ -126,3 +126,40 @@ stop() {
     eend $?
 }
 ```
+:::
+
+::: details Systemd服务文件
+```bash
+vim /etc/systemd/system/caddy.service
+```
+```bash
+[Unit]
+Description=Caddy Web Server
+Documentation=https://caddyserver.com/docs/
+After=network.target
+
+[Service]
+User=root
+ExecStart=/root/caddy/caddy run --config /root/caddy/Caddyfile --adapter caddyfile
+ExecReload=/bin/kill -HUP $$MAINPID
+Restart=on-failure
+PIDFile=/var/run/caddy.pid
+LimitNOFILE=8192
+Environment=CADDY_ADAPTER=caddyfile
+
+[Install]
+WantedBy=multi-user.target
+```
+```bash
+systemctl daemon-reload
+```
+```bash
+systemctl start caddy
+```
+```bash
+systemctl enable caddy
+```
+```bash
+systemctl status caddy
+```
+:::
