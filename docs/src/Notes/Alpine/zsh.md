@@ -16,7 +16,7 @@ updateTime: "2025-04-18 14:56:32"
 apt update
 ```
 ```bash
-apt install -y zsh git curl wget tmux dnsutils net-tools
+apt install -y zsh git curl wget tmux dnsutils net-tools fuse libfuse2 -y
 ```
 
 # 配置 Zsh 环境
