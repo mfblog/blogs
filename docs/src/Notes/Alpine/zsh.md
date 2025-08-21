@@ -16,7 +16,7 @@ updateTime: "2025-04-18 14:56:32"
 apt update
 ```
 ```bash
-apt install -y zsh git curl wget tmux dnsutils net-tools fuse libfuse2 -y
+apt install -y zsh git curl wget tmux dnsutils net-tools fuse libfuse2 make build-essential -y
 ```
 
 # 配置 Zsh 环境
@@ -38,6 +38,9 @@ export SAVEHIST=10000
 
 # Zim（Zsh 配置管理器）安装路径
 export ZIM_HOME="$XDG_DATA_HOME/zim"
+
+# lvim需要
+export PATH=/root/.local/bin:$PATH
 EOF
 ```
 
@@ -60,14 +63,14 @@ zsh
 ltnt_install all
 ```
 
-# 安装并链接 NeoVim
+## 安装并链接 NeoVim
 
 ```bash
 ln -sf /usr/local/bin/nvim.appimage /usr/local/bin/nvim
 chmod +x /usr/local/bin/nvim
 ```
 
-# 克隆常用工具配置
+## 克隆常用工具配置
 
 ```bash
 cd $HOME
@@ -77,6 +80,19 @@ git clone ${GITHUB}/lazygit-config        ~/.config/lazygit
 git clone ${GITHUB}/tmux-config           ~/.config/tmux
 git clone ${GITHUB}/tmux-powerline-config ~/.config/tmux-powerline
 git clone ${GITHUB}/btop-config.git       ~/.config/btop
+```
+## 安装 LunarVim
+```bash
+bash <(curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh)
+```
+::: tip 注意
+如果提示yes or on 一路回车就可以了
+:::
+
+## 同步插件配置
+### 在 Neovim 中执行插件同步命令
+```bash 
+:Lazy sync
 ```
 
 # Tmux 快捷键与窗口管理
