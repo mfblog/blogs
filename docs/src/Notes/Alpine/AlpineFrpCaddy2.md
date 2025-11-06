@@ -6,23 +6,32 @@ tags: "阿里云/Frp/Caddy"
 updateTime: "2024-12-12 13:08:32"
 ---
 
-# Frp Server搭建与Caddy搭建
+## Frp Server搭建与Caddy搭建
 
 ## Frp Server搭建
 
 ::: tip 环境准备
+
 ```bash
 mkdir -p /usr/local/frp
 ```
+
 :::
 
 ## 服务端部署流程
-- [下载最新版本](https://github.com/fatedier/frp/releases/)
-- 解压安装包
+
+### 下载最新版本
+
+[下载最新版本](https://github.com/fatedier/frp/releases/)
+
+### 解压安装包
+
 ```bash
 tar -zxvf 压缩文件名.tar.gz
 ```
-- 配置文件示例
+
+### 配置文件示例
+
 ```toml
 bindPort = 7000
 auth.token = "123321"
@@ -32,11 +41,15 @@ webServer.port = 7500
 webServer.user = "aa123"
 webServer.password = "aa123"
 ```
-- 权限设置
+
+### 权限设置
+
 ```bash
 chmod 777 *
 ```
+
 ::: warning 服务配置
+
 ```js
 #!/sbin/openrc-run
 
@@ -62,6 +75,7 @@ stop() {
     eend $?
 }
 ```
+
 :::
 
 ## 服务管理命令
@@ -71,6 +85,7 @@ rc-update add frps-server  # 添加开机启动
 rc-service frps-server start  # 启动服务
 rc-service frps-server status  # 查看状态
 ```
+
 ## Caddy搭建
 
 ::: tip 安装步骤
@@ -84,6 +99,7 @@ chmod 777 /root/caddy/caddy
 :::
 
 ## 配置文件示例
+
 ```json
 解析好的域名 {
     reverse_proxy 127.0.0.1:3000
@@ -100,7 +116,9 @@ chmod 777 /root/caddy/caddy
     encode gzip
 }
 ```
+
 ::: danger 服务配置
+
 ```js
 #!/sbin/openrc-run
 
@@ -129,9 +147,11 @@ stop() {
 :::
 
 ::: details Systemd服务文件
+
 ```bash
 vim /etc/systemd/system/caddy.service
 ```
+
 ```bash
 [Unit]
 Description=Caddy Web Server
@@ -150,16 +170,12 @@ Environment=CADDY_ADAPTER=caddyfile
 [Install]
 WantedBy=multi-user.target
 ```
+
 ```bash
 systemctl daemon-reload
-```
-```bash
 systemctl start caddy
-```
-```bash
 systemctl enable caddy
-```
-```bash
 systemctl status caddy
 ```
+
 :::

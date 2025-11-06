@@ -7,7 +7,9 @@ updateTime: "2024-12-12 13:46:32"
 ---
 
 ## 📡 网络基础配置
+
 ::: tip 多平台支持
+
 ```json
 159.138.0.133
 
@@ -15,27 +17,38 @@ updateTime: "2024-12-12 13:46:32"
 
 192.168.88.0/24
 ```
-:::
 
+:::
 
 ## 安装部署
+
 ::: tip 多平台支持
+
 支持Linux/Windows/macOS/iOS/Android
 [官方安装指南](https://www.wireguard.com/install/)
+
 :::
+
 ## Linux服务器安装
+
 ```bash
 apt update && apt upgrade -y
 apt install wireguard iptables -y
 ```
+
 ## 内核参数配置
+
 ```bash
 echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 sysctl -p
 ```
+
 ## 中转服务端配置
+
 ::: danger 安全提醒
+
 请妥善保管PrivateKey并定期更换密钥
+
 ```toml
 [Interface]
 PrivateKey = KMZcc5CyJMctcG1FDgiaBzzrb0hjhgkjUKy426tJn18=
@@ -54,9 +67,11 @@ AllowedIPs = 10.0.0.3/32
 [Peer]
 PublicKey = 05qATVYj0WVlRBeWc+C26AQGQjUCXobWkCdpjtwzHy4=
 AllowedIPs = 10.0.0.4/32
+
 :::
 
 ::: details 添加各自真实的局域网网段未测试
+
 ```toml
 [Interface]
 PrivateKey = KMZcc5CyJMctcG1FDgiaBzzrb0hjhgkjUKy426tJn18=
@@ -75,12 +90,14 @@ AllowedIPs = 10.0.0.3/32, 192.168.100.0/24
 [Peer]
 PublicKey = 05qATVYj0WVlRBeWc+C26AQGQjUCXobWkCdpjtwzHy4=
 AllowedIPs = 10.0.0.4/32, 192.168.88.0/24
-
 ```
+
 :::
 
 ## 客户端配置
+
 ### 办公室客户端
+
 ```toml [/etc/wireguard/wg0.conf]
 [Interface]
 PrivateKey = cG0MxhUTvjg+oh3PCiZxBSHnpHHKQR3sxeUxtkYXjmA=
@@ -93,7 +110,9 @@ AllowedIPs = 10.0.0.0/16
 Endpoint = 159.138.0.133:51820
 PersistentKeepalive = 15
 ```
+
 ::: details 添加各自真实的局域网网段未测试
+
 ```toml
 [Interface]
 PrivateKey = cG0MxhUTvjg+oh3PCiZxBSHnpHHKQR3sxeUxtkYXjmA=
@@ -107,9 +126,11 @@ Endpoint = 159.138.0.133:51820
 AllowedIPs = 10.0.0.0/16, 192.168.88.0/24
 PersistentKeepalive = 15
 ```
+
 :::
 
 ### 手机客户端(其他设备)
+
 ```toml [/etc/wireguard/wg0.conf]
 [Interface]
 PrivateKey = oHhBqbTGicqoHbZ+mWvcFcX5e/dodfDAZb0zk6ASoX0=
@@ -122,7 +143,9 @@ Endpoint = 159.138.0.133:51820
 AllowedIPs = 10.0.0.0/16
 PersistentKeepalive = 15
 ```
+
 ::: details 添加各自真实的局域网网段未测试
+
 ```toml
 [Interface]
 PrivateKey = oHhBqbTGicqoHbZ+mWvcFcX5e/dodfDAZb0zk6ASoX0=
@@ -136,17 +159,23 @@ Endpoint = 159.138.0.133:51820
 AllowedIPs = 10.0.0.0/16, 192.168.100.0/24
 PersistentKeepalive = 15
 ```
+
 :::
 
 ## 服务管理
+
 ::: code-group
+
 ```bash[启动]
 wg-quick up wg0
 ```
+
 ```bash[停止]
 wg-quick down wg0
 ```
+
 ```bash[状态]
 wg show
 ```
+
 :::

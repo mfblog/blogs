@@ -6,20 +6,19 @@ tags: "zsh/Tmux"
 updateTime: "2025-04-18 14:56:32"
 ---
 
-
-
-# 环境准备
+## 环境准备
 
 首先更新软件包列表并安装必要工具：Zsh、Git、Curl、Wget 以及 Tmux。
 
 ```bash
 apt update
 ```
+
 ```bash
 apt install -y zsh git curl wget tmux dnsutils net-tools fuse libfuse2 make build-essential -y
 ```
 
-# 配置 Zsh 环境
+## 配置 Zsh 环境
 
 使用 `tee` 命令创建并写入环境变量配置文件：
 
@@ -44,33 +43,38 @@ export PATH=/root/.local/bin:$PATH
 EOF
 ```
 
-# 立即生效
+## 立即生效
+
 ```bash
 source "$HOME/.zshenv"
 ```
 
-# 克隆并应用 Zsh 配置：
+## 克隆并应用 Zsh 配置
 
 ```bash
 git clone https://github.com/LittleNewton/zsh-config.git ~/.config/zsh
 ```
-## 首次运行会自动安装依赖
+
+### 首次运行会自动安装依赖
+
 ```bash
 zsh
 ```
-## 随后执行下列命令安装所需的软件
+
+### 随后执行下列命令安装所需的软件
+
 ```bash
 ltnt_install all
 ```
 
-## 安装并链接 NeoVim
+### 安装并链接 NeoVim
 
 ```bash
 ln -sf /usr/local/bin/nvim.appimage /usr/local/bin/nvim
 chmod +x /usr/local/bin/nvim
 ```
 
-## 克隆常用工具配置
+### 克隆常用工具配置
 
 ```bash
 cd $HOME
@@ -81,45 +85,54 @@ git clone ${GITHUB}/tmux-config           ~/.config/tmux
 git clone ${GITHUB}/tmux-powerline-config ~/.config/tmux-powerline
 git clone ${GITHUB}/btop-config.git       ~/.config/btop
 ```
-## 安装 LunarVim
+
+### 安装 LunarVim
+
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh)
 ```
+
 ::: tip 注意
+
 如果提示yes or on 一路回车就可以了
+
 :::
 
-## 同步插件配置
-### 在 Neovim 中执行插件同步命令
-```bash 
+### 同步插件配置
+
+#### 在 Neovim 中执行插件同步命令
+
+```bash
 :Lazy sync
 ```
 
-# Tmux 快捷键与窗口管理
+## Tmux 快捷键与窗口管理
 
-## 安装插件
+### 安装插件
+
 - **创建新会话**：`tmux new -s session`
 - **安装插件**：`Ctrl + b` 然后按 `Shift + i`
-## 会话管理
+
+### 会话管理
 
 - **创建新会话**：`tmux new -s session`
 - **列出会话**：`tmux ls`
 - **重命名会话**：`tmux rename-session -t old_name new_name`
 
-## 窗口操作
+### 窗口操作
 
 - **新建窗口**：`Ctrl + b` 然后按 `c`
 - **切换窗口**：`Ctrl + b` → 数字键（如 `0` 切换到第 0 号窗口）
 - **重命名窗口**：`Ctrl + b` → `,` → 输入名称
 
-## 面板分屏
+### 面板分屏
 
 - **水平分屏**：`Ctrl + b` → `"`
 - **垂直分屏**：`Ctrl + b` → `%`
 - **切换面板**：`Ctrl + b` → 方向键（←↑→↓）
 - **关闭面板**：`Ctrl + b` → `x` 或输入 `exit`
 
-## 快捷键帮助
+### 快捷键帮助
 
 按 `Ctrl + b` → `?` 可查看所有快捷键，按 `q` 退出帮助界面。
 

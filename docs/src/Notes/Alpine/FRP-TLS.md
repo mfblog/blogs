@@ -9,14 +9,19 @@ updateTime: "2025-02-19 14:06:32"
 ## TLS双向认证核心流程
 
 ::: tip TLS双向认证核心流程
+
 FRP实现双向认证需完成CA证书链构建、服务端/客户端证书签发、配置文件适配三大核心步骤。以下为标准化操作流程
+
 :::
 
 ## 🔐 证书生成体系
 
 ### 一、CA根证书构建（信任链基础）
+
 ::: warning 安全警告
+
 CA私钥是信任链核心，必须离线存储并设置访问权限
+
 :::
 
 ```bash
@@ -29,8 +34,11 @@ openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 \
 ```
 
 ### 二、服务端证书签发
+
 ::: details SAN扩展必要性
+
 必须包含服务域名防止证书校验失败
+
 :::
 
 ```bash
@@ -49,6 +57,7 @@ openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
 ```
 
 ### 三、客户端证书签发
+
 ```bash
 # 生成客户端密钥
 openssl genrsa -out client.key 2048
@@ -61,7 +70,9 @@ openssl req -new -key client.key \
 openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key \
   -CAcreateserial -days 3650 -sha256 -out client.crt
 ```
+
 ## 📁 证书文件体系
+
 ```bash
 TLS_CERTIFICATES/
 ├── ca/
@@ -76,8 +87,11 @@ TLS_CERTIFICATES/
 ```
 
 ## ⚙️ FRP服务端配置
+
 ::: danger 关键配置项
+
 必须同时配置transport和webServer的TLS参数
+
 :::
 
 ```toml
@@ -93,7 +107,9 @@ tls.certFile = "/etc/frp/ssl/server.crt"
 tls.keyFile = "/etc/frp/ssl/server.key"
 tls.trustedCaFile = "/etc/frp/ssl/ca.crt"
 ```
+
 ## 🖥️ FRP客户端配置
+
 ```toml
 # frpc.toml
 [transport]
@@ -102,13 +118,17 @@ tls.certFile = "/etc/frp/ssl/client.crt"
 tls.keyFile = "/etc/frp/ssl/client.key"
 tls.trustedCaFile = "/etc/frp/ssl/ca.crt"
 ```
+
 ::: tip 部署验证步骤
+
 - 检查证书链完整性：openssl verify -CAfile ca.crt server.crt
-- 测试双向认证：curl --cert client.crt --key client.key --cacert ca.crt https://frp.ccya.top
+- 测试双向认证：curl --cert client.crt --key client.key --cacert ca.crt [https://frp.ccya.top](https://frp.ccya.top)
 - 查看FRP日志确认TLS握手成功
+
 :::
 
 ## 🛡️ 安全增强建议
+
 - 定期轮换客户端证书（建议90天有效期）
 - 为不同客户端颁发独立证书
 - 在防火墙限制CA证书指纹白名单

@@ -22,8 +22,12 @@ types:
   #flow: true
 ---
 
+## Notes
+
+<!-- markdownlint-disable MD033 -->
 <script setup>
 import BlogArchive from '../../.vitepress/views/BlogArchive.vue'
 </script>
 
 <BlogArchive/>
+<!-- markdownlint-enable MD033 -->

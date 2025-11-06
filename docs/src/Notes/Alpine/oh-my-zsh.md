@@ -6,12 +6,14 @@ tags: "zsh/oh-my-zsh"
 updateTime: "2025-03-17 11:06:32"
 ---
 
-# Zsh && Oh My Zsh 安装指南
+## Zsh && Oh My Zsh 安装指南
 
 ## 📥 下载地址
+
 [点击下载 zsh.sh](https://tyecho-1253296622.cos.ap-beijing-1.myqcloud.com/zsh.sh)
 
 ## 📦 Github 仓库
+
 [oh-my-zsh-backup](https://github.com/mfblog/oh-my-zsh-backup)
 
 ## 🖥️ 安装脚本
