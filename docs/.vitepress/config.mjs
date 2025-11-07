@@ -1,5 +1,8 @@
 import { defineConfig } from "vitepress";
 import { fileURLToPath, URL } from "node:url";
+import fs from "node:fs";
+import path from "node:path";
+import matter from "gray-matter";
 import { getSidebar } from "./utils/getSidebar";
 
 export default defineConfig({
@@ -72,4 +75,47 @@ export default defineConfig({
     },
   },
   lastUpdated: true,
+
+  transformPageData(pageData) {
+    if (pageData.relativePath === "Notes/index.md") {
+      const latestLink = getLatestAlpineNoteLink();
+      const types = Array.isArray(pageData.frontmatter.types)
+        ? [...pageData.frontmatter.types]
+        : [];
+      if (types.length) {
+        types[0] = { ...types[0], link: latestLink };
+      } else {
+        types.push({
+          name: "Alpine 笔记",
+          desc: "最新发布",
+          link: latestLink,
+          icon: "📄",
+        });
+      }
+      pageData.frontmatter.types = types;
+    }
+  },
 });
+
+function getLatestAlpineNoteLink() {
+  const alpineDir = path.resolve(process.cwd(), "docs/src/Notes/Alpine");
+  const entries = fs.readdirSync(alpineDir);
+  let latestTime = 0;
+  let latestLink = "/Notes/Alpine/";
+
+  for (const entry of entries) {
+    if (!entry.endsWith(".md")) continue;
+    const filePath = path.join(alpineDir, entry);
+    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const { data } = matter(fileContent);
+    if (!data?.updateTime) continue;
+    const time = new Date(data.updateTime).getTime();
+    if (Number.isNaN(time)) continue;
+    if (time > latestTime) {
+      latestTime = time;
+      latestLink = `/Notes/Alpine/${entry.replace(/\\.md$/, "")}`;
+    }
+  }
+
+  return latestLink;
+}
