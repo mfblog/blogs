@@ -6,6 +6,8 @@ tags: "阿里云/Frp/Caddy"
 updateTime: "2024-12-12 13:08:32"
 ---
 
+# ↔️ 内网穿透终解(二)
+
 ## Frp Server搭建与Caddy搭建
 
 ## Frp Server搭建
@@ -98,7 +100,7 @@ chmod 777 /root/caddy/caddy
 
 :::
 
-## 配置文件示例
+## 配置文件示例（FRP）
 
 ```json
 解析好的域名 {
@@ -144,6 +146,7 @@ stop() {
     eend $?
 }
 ```
+
 :::
 
 ::: details Systemd服务文件

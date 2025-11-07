@@ -1,10 +1,12 @@
 ---
-title: "🐧 Debian12 Docker 指南"
+title: "🐧 Debian 12 Docker 指南"
 outline: deep
 desc: "Debian 12 下快速部署 Docker Engine 与 Docker Compose 的操作手册"
 tags: "Debian/Docker"
 updateTime: "2025-11-06 14:53:16"
 ---
+
+# 🐧 Debian 12 Docker 指南
 
 ::: warning 操作权限
 

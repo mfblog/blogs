@@ -6,6 +6,8 @@ tags: "zsh/Tmux"
 updateTime: "2025-04-18 14:56:32"
 ---
 
+# ⌨️ Zsh & Tmux 环境全攻略
+
 ## 环境准备
 
 首先更新软件包列表并安装必要工具：Zsh、Git、Curl、Wget 以及 Tmux。

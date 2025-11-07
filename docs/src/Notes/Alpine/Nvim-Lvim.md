@@ -6,6 +6,8 @@ tags: "Nvim/Lvim"
 updateTime: "2025-03-25 15:51:33"
 ---
 
+# ⌨️ Nvim && Lvim 安装指南
+
 ## Neovim 与 LunarVim 安装配置指南
 
 ## 下载并解压 Neovim 最新版本

@@ -6,6 +6,8 @@ tags: "zsh/oh-my-zsh"
 updateTime: "2025-03-17 11:06:32"
 ---
 
+# ⌨️ Oh My Zsh 配置指南
+
 ## Zsh && Oh My Zsh 安装指南
 
 ## 📥 下载地址
