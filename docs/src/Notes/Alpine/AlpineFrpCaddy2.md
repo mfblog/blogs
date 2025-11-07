@@ -32,7 +32,7 @@ mkdir -p /usr/local/frp
 tar -zxvf 压缩文件名.tar.gz
 ```
 
-### 配置文件示例
+### FRP 配置示例
 
 ```toml
 bindPort = 7000
@@ -100,7 +100,7 @@ chmod 777 /root/caddy/caddy
 
 :::
 
-## 配置文件示例（FRP）
+## Caddy 配置示例
 
 ```json
 解析好的域名 {
