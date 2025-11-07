@@ -80,7 +80,7 @@ function generate(notesRootPath: string, pagePath: string, prefix = "", depth = 
   sidebarSection.items!.sort((a, b) => {
     const { time: av } = formatDate(a.updateTime);
     const { time: bv } = formatDate(b.updateTime);
-    return av - bv;
+    return bv - av;
   });
 
   return [sidebarSection];
