@@ -14,8 +14,8 @@ updateTime: "2025-11-07 15:58:00"
 
 - 默认输出是 JSON，可结合 `less`、`grep` 或 `jq` 过滤。
 - `-f` 选项支持 Go 模板，直接提取字段最省时。
-- `docker inspect <容器|镜像>` 与 `docker inspect -f '{{...}}' <容器>` 是两种常见形态。
-  :::
+- `docker inspect &lt;容器｜镜像&gt;` 与 `docker inspect -f '{{...}}' &lt;容器&gt;` 是两种常见形态。
+:::
 
 ## 1. 基础信息查询
 
