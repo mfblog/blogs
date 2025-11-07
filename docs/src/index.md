@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter } from 'vitepress'
-import { data as posts } from '../.vitepress/utils/article.data.js'
+import { data as posts } from '../.vitepress/utils/article.data.ts'
 
 const router = useRouter()
 

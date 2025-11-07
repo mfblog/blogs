@@ -24,23 +24,7 @@ types:
 
 <!-- markdownlint-disable MD033 -->
 <script setup>
-import { computed } from 'vue'
-import { useData } from 'vitepress'
 import BlogArchive from '../../.vitepress/views/BlogArchive.vue'
-import { data as posts } from '../../.vitepress/utils/article.data.js'
-
-const { frontmatter } = useData()
-
-const latestLink = computed(() =>
-  posts.length > 0 ? posts[0].url.replace(/\.html$/, '') : '/Notes/Alpine/'
-)
-
-if (frontmatter.value.types && frontmatter.value.types.length > 0) {
-  frontmatter.value.types[0] = {
-    ...frontmatter.value.types[0],
-    link: latestLink.value,
-  }
-}
 </script>
 
 <BlogArchive/>
