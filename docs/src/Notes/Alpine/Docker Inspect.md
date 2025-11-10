@@ -8,7 +8,7 @@ updateTime: "2025-11-07 15:58:00"
 
 `docker inspect` 输出看似繁琐，但它是排查网络、配置、资源异常时最直接的“真相仪”。这篇笔记把实战中最常用的查询方式整理成模块化命令，保持与 Debian 12 指南一致的段落与提示样式，复制即用。
 
-## 使用前速览
+## ⚡ 使用前速览
 
 ::: tip 推荐执行方式
 
@@ -17,9 +17,9 @@ updateTime: "2025-11-07 15:58:00"
 - `docker inspect &lt;容器｜镜像&gt;` 与 `docker inspect -f '\{\{...\}\}' &lt;容器&gt;` 是两种常见形态。
 :::
 
-## 1. 基础信息查询
+## 1. 📋 基础信息查询
 
-### 查看容器或镜像详情
+### 🔍 查看容器或镜像详情
 
 ```bash
 # 容器完整信息
@@ -29,7 +29,7 @@ docker inspect my-nginx | less
 docker inspect nginx:latest | grep Layers -A 20
 ```
 
-### 抽取常见字段
+### 🧾 抽取常见字段
 
 ```bash
 # 运行状态 / 启动时间 / 退出码
@@ -42,9 +42,9 @@ docker inspect -f '{{.Image}}' my-nginx
 docker inspect nginx:latest | jq '.[0].Config.Cmd'
 ```
 
-## 2. 网络与端口
+## 2. 🌐 网络与端口
 
-### 获取 IP、网关、MAC
+### 📡 获取 IP、网关、MAC
 
 ```bash
 # 默认网络 IP
@@ -58,7 +58,7 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}' my-ng
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' my-nginx
 ```
 
-### 端口与 DNS
+### 🚪 端口与 DNS
 
 ```bash
 # 端口映射概览
@@ -69,7 +69,7 @@ docker inspect -f '{{.HostConfig.Dns}}' my-nginx
 docker inspect -f '{{.HostConfig.ExtraHosts}}' my-nginx
 ```
 
-## 3. 数据卷与环境变量
+## 3. 📦 数据卷与环境变量
 
 ```bash
 # 列出挂载点
@@ -84,7 +84,7 @@ docker inspect my-nginx | jq '.[0].Config.Env'
 docker inspect my-nginx | grep MYSQL_ROOT_PASSWORD
 ```
 
-## 4. 资源限制
+## 4. 🧠 资源限制
 
 ```bash
 # 内存限制（字节）
@@ -98,9 +98,9 @@ docker inspect -f '{{.HostConfig.NanoCpus}}' my-nginx
 docker inspect -f '{{.HostConfig.MemoryReservation}}' my-nginx
 ```
 
-## 5. 批量与脚本技巧
+## 5. 🛠️ 批量与脚本技巧
 
-### 批量查看 IP、状态
+### 🧮 批量查看 IP、状态
 
 ```bash
 # 所有容器 IP
@@ -110,7 +110,7 @@ docker ps -q | xargs -I {} docker inspect -f '{{.Name}} {{range .NetworkSettings
 docker ps -aq | xargs docker inspect -f '{{.Name}} {{.State.Status}}'
 ```
 
-### 导出配置对比
+### 🔁 导出配置对比
 
 ```bash
 docker inspect c1 > c1.json
@@ -122,7 +122,7 @@ diff <(docker inspect c1 | jq '.[0].Config') \
      <(docker inspect c2 | jq '.[0].Config')
 ```
 
-## 6. 健康检查与监控
+## 6. ❤️‍🩹 健康检查与监控
 
 ```bash
 # 健康检查定义与结果
@@ -145,7 +145,7 @@ for c in $(docker ps -q); do
 done
 ```
 
-## 7. 组合命令速查
+## 7. 🧩 组合命令速查
 
 ```bash
 # 故障诊断一键脚本
@@ -162,7 +162,7 @@ docker inspect -f 'CPU限制: {{.HostConfig.NanoCpus}}' "$CONTAINER"
 docker inspect -f '日志路径: {{.LogPath}}' "$CONTAINER"
 ```
 
-## 8. 导出配置报告
+## 8. 📄 导出配置报告
 
 ```bash
 docker inspect ops-not-nginx | jq '{
