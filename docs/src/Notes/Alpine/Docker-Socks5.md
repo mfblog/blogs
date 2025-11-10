@@ -28,7 +28,9 @@ Docker 作为 systemd 服务运行，所以需要通过 drop-in 方式注入环�
 
 ```bash
 mkdir -p /etc/systemd/system/docker.service.d
+```
 
+```bash
 tee /etc/systemd/system/docker.service.d/proxy.conf > /dev/null <<'EOF'
 [Service]
 Environment="HTTP_PROXY=socks5h://192.168.88.3:8888"
@@ -51,6 +53,9 @@ systemctl restart docker
 
 ```bash
 systemctl show --property=Environment docker
+```
+
+```bash
 docker info | grep -A 5 Proxy
 ```
 
