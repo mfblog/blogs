@@ -1,13 +1,23 @@
 {
   "headers": [
     {
-      "source": "/assets/*",
+      "source": "/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "max-age=31536000"
+          "value": "max-age=31536000, immutable"
         }
       ]
+    }
+  ],
+  "caches": [
+    {
+      "source": "/(.*)\\.(jpg|png|webp|gif|jpeg|svg|ico|woff2|ttf)",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/assets/(.*)\\.(js|css)",
+      "cacheTtl": 31536000
     }
   ]
 }
