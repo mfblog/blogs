@@ -1,7 +1,7 @@
 {
   "headers": [
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/*",
       "headers": [
         {
           "key": "Cache-Control",
@@ -12,11 +12,47 @@
   ],
   "caches": [
     {
-      "source": "/(.*)\\.(jpg|png|webp|gif|jpeg|svg|ico|woff2|ttf)",
+      "source": "/*.jpg",
       "cacheTtl": 2592000
     },
     {
-      "source": "/assets/(.*)\\.(js|css)",
+      "source": "/*.jpeg",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/*.png",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/*.webp",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/*.gif",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/*.svg",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/*.ico",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/*.woff2",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/*.ttf",
+      "cacheTtl": 2592000
+    },
+    {
+      "source": "/assets/*.js",
+      "cacheTtl": 31536000
+    },
+    {
+      "source": "/assets/*.css",
       "cacheTtl": 31536000
     }
   ]
