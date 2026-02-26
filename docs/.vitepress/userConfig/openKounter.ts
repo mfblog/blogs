@@ -4,7 +4,6 @@
  */
 export const openKounterConfig = {
   enabled: true,
-  apiBaseUrl: "https://open-kounter-symdlwww.edgeone.run",
+  apiBaseUrl: "https://ok.ccya.top",
   timeout: 6000,
 };
-
