@@ -4,6 +4,9 @@
   >
     <p class="text-sm font-medium">{{ footer.copyright }}</p>
     <p class="text-sm font-medium">
+      访问统计：PV {{ formatCounter(sitePv) }} | UV {{ formatCounter(siteUv) }}
+    </p>
+    <p class="text-sm font-medium">
       Github |
       <a href="https://github.com/mfblog/blogs">茶茶吖笔记</a>
     </p>
@@ -12,6 +15,7 @@
 
 <script setup lang="ts">
 import { useData } from "vitepress";
+import { formatCounter, sitePv, siteUv } from "../utils/openKounter.js";
 
 const { theme } = useData();
 const { footer } = theme.value;

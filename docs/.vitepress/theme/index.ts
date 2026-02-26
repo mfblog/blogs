@@ -9,6 +9,7 @@ import LinkCard from "../components/LinkCard.vue";
 import HText from "../components/HText.vue";
 import mediumZoom from "medium-zoom";
 import { onMounted, watch, nextTick } from "vue";
+import { syncOpenKounter } from "../utils/openKounter.js";
 
 export default {
   extends: DefaultTheme,
@@ -22,10 +23,15 @@ export default {
     const initZoom = () => {
       mediumZoom(".main img", { background: "var(--vp-c-bg)", margin: 24 });
     };
-    onMounted(() => initZoom());
+    const initPageEffects = () => {
+      initZoom();
+      syncOpenKounter(route.path);
+    };
+
+    onMounted(() => initPageEffects());
     watch(
       () => route.path,
-      () => nextTick(() => initZoom())
+      () => nextTick(() => initPageEffects())
     );
   },
 } satisfies Theme;
