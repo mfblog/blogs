@@ -217,10 +217,10 @@ btrfs subvolume list -t /
 
 ```bash[创建只读快照（常见 @ 布局示例）]
 # 根子卷快照
-btrfs subvolume snapshot -r /@ /@snapshots/root-$(date +%F-%H%M)
+btrfs subvolume snapshot -r / /.snapshots/pre-install-$(date +%F-%H%M)
 
 # 数据子卷快照
-btrfs subvolume snapshot -r /@data /@snapshots/data-$(date +%F-%H%M)
+btrfs subvolume snapshot -r /@data /.snapshots/pre-install-$(date +%F-%H%M)
 ```
 
 ```bash[创建可写快照（用于临时恢复测试）]
