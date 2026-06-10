@@ -1,125 +1,190 @@
 ---
-title: "🐧 中文环境、时区同步与SSH安全加固"
+title: "🐧 中文环境、时区同步与 SSH 安全加固"
 outline: deep
-desc: "本教程将引导你完成中文环境、标准时区与 SSH 加固配置"
+desc: "Debian/Ubuntu 服务器中文 locale、Asia/Shanghai 时区与 SSH 密钥登录加固流程"
 tags: "Linux/服务器/SSH/安全/中文环境/教程"
 updateTime: "2025-08-21 09:06:32"
 ---
 
-# 🐧 中文环境、时区同步与SSH安全加固
+# 🐧 中文环境、时区同步与 SSH 安全加固
 
-## 服务器基础配置：中文环境、时区同步与SSH安全加固
+新服务器上线后，最先应该处理三件小事：中文显示、系统时区和远程登录安全。它们看起来基础，但会直接影响日志排查、定时任务、应用渲染和服务器暴露面。
 
-在初始化一台新的云服务器（尤其是在非中文区域创建的实例）时，我们常常面临几个基础但至关重要的问题：如何正确显示中文字符、如何确保服务器时间与我们所在的时区一致，以及如何保障服务器的远程访问安全。
+本文以 Debian/Ubuntu 为例，默认使用 `apt`、`systemd` 和 OpenSSH。
 
-本文将为您提供一个清晰、实用的操作指南，一步步完成以下核心配置：
+::: warning 操作前准备
 
-1. **安装中文语言支持**：解决终端或应用中中文乱码的问题。
-2. **同步中国标准时间（CST）**：确保日志记录、计划任务等时间相关的功能准确无误。
-3. **强化SSH安全**：禁用密码登录，强制使用密钥认证，大幅提升服务器的安全性。
+SSH 加固前，请确认你已经能使用密钥登录服务器。修改 SSH 配置时，建议保留当前已连接的窗口，再打开一个新窗口验证登录，避免把自己锁在服务器外。
 
-本教程以基于 Debian/Ubuntu 的系统为例（使用 `apt` 作为包管理器），其他 Linux 发行版请酌情调整命令。
+:::
 
-## 第一步：安装中文字体和语言包
-
-为了让服务器的操作系统能够正确解析和显示中文字符，我们需要安装必要的中文字体和语言包。`locales-all` 包可以帮助我们预生成所有支持的语言环境，避免后续手动生成的麻烦。
+## 安装中文语言与字体
 
 ```bash
-# 更新软件包列表
 apt update
-
-# 安装文泉驿正黑字体和所有地区/语言设置包
-apt install -y fonts-wqy-zenhei locales-all
+apt install -y locales locales-all fonts-wqy-zenhei fonts-wqy-microhei
 ```
 
-- `fonts-wqy-zenhei`：这是一个开源的、高质量的黑体中文字体库，覆盖了 GBK 字符集，能满足绝大多数中文显示需求。
-- `locales-all`：这个包包含了所有可用的 locale 数据。安装它会消耗一些磁盘空间，但可以一劳永逸地解决语言环境缺失的问题。
+各组件用途：
 
-## 第二步：配置系统区域设置为中文
+| 组件 | 作用 |
+| --- | --- |
+| `locales` | 管理系统语言环境 |
+| `locales-all` | 提供完整 locale 数据，减少缺失问题 |
+| `fonts-wqy-zenhei` | 文泉驿正黑，适合中文显示 |
+| `fonts-wqy-microhei` | 文泉驿微米黑，常用于网页和轻量环境 |
 
-安装完语言包后，我们需要通过一个简单的配置命令来激活中文语言环境，使其成为系统可选项。
+## 设置默认 Locale
 
-运行 `dpkg-reconfigure` 命令，它会提供一个交互式的界面来选择和设置系统默认的语言环境。
+运行交互式配置：
 
 ```bash
 dpkg-reconfigure locales
 ```
 
-执行上述命令后，您会看到一个语言列表。请按以下步骤操作：
+在列表中勾选：
 
-1. 使用键盘的「下箭头」键向下滚动，找到 `zh_CN.UTF-8 UTF-8` 这一项。
-2. 按「空格键」选中它（前面出现 `[*]` 代表已选中）。
-3. 按「Tab」键切换到 `<Ok>` 按钮，然后按「回车」。
-4. 在下一个界面中，再次选择 `zh_CN.UTF-8` 作为系统默认的 locale，然后切换到 `<Ok>` 并「回车」。
+```text
+zh_CN.UTF-8 UTF-8
+```
 
-系统会重新生成 locale 文件。配置完成后，您的服务器就具备了完整的中文环境支持。
+随后将默认 locale 设置为：
 
-## 第三步：设置时区为中国标准时间
+```text
+zh_CN.UTF-8
+```
 
-服务器的日志文件、定时任务（Cron jobs）以及许多应用程序都高度依赖于准确的系统时间。将时区设置为 `Asia/Shanghai`（即中国标准时间，UTC+8）可以确保时间的一致性。
+验证：
 
-使用 `timedatectl` 命令可以轻松完成设置：
+```bash
+locale
+```
+
+如果某些非交互环境仍未生效，可以写入 `/etc/default/locale`：
+
+```bash
+tee /etc/default/locale >/dev/null <<'EOF'
+LANG=zh_CN.UTF-8
+LANGUAGE=zh_CN:zh
+LC_ALL=zh_CN.UTF-8
+EOF
+```
+
+重新登录后再检查一次。
+
+## 设置中国标准时间
+
+将系统时区设置为 `Asia/Shanghai`：
 
 ```bash
 timedatectl set-timezone Asia/Shanghai
-```
-
-设置成功后，您可以运行 `timedatectl` 或 `date` 命令来验证当前的时间和时区是否正确。
-
-```bash
-# 查看当前时间和时区状态
 timedatectl
-
-# 或者直接查看日期和时间
 date
 ```
 
-您应该能看到类似 `CST 2025-08-21 ...` 的输出，表明时区已正确设置为中国标准时间。
+如果启用了 NTP，`timedatectl` 中通常会看到 `System clock synchronized: yes`。如果未同步，可启用系统默认时间同步服务：
 
-## 第四步：增强SSH安全：禁用密码登录
+```bash
+timedatectl set-ntp true
+```
 
-依赖密码进行SSH登录存在被暴力破解的风险。**最佳安全实践是禁用密码登录，强制使用更安全的SSH密钥对进行身份验证。**
+::: tip 为什么要设置时区
 
-在执行此操作前，**请务必确认您已经配置好了SSH密钥，并且可以通过密钥成功登录服务器**，否则您将可能将自己锁在服务器之外！
+日志、Cron、证书续签、备份脚本都会依赖系统时间。时区不统一时，排障时很容易误判事件发生顺序。
 
-1. **编辑SSH配置文件**
+:::
 
-    使用您喜欢的文本编辑器（如 `vim` 或 `nano`）打开 SSH 的主配置文件 `/etc/ssh/sshd_config`：
+## 配置 SSH 密钥登录
 
-    ```bash
-    vim /etc/ssh/sshd_config
-    ```
+先在本地生成或确认已有密钥：
 
-2. **修改配置项**
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
 
-    在文件中找到以下三项，并确保它们的值如下所示。如果某一项不存在，可以手动在文件末尾添加。
+将公钥写入服务器用户的 `authorized_keys`：
 
-    ```ini
-    # 禁止 root 用户使用密码登录，但仍允许通过密钥登录。
-    # 这是比直接 `PermitRootLogin no` 更灵活的设置。
-    PermitRootLogin prohibit-password
+```bash
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+vim ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
 
-    # 禁止所有用户使用密码进行身份验证。
-    PasswordAuthentication no
+也可以在本地使用：
 
-    # 确保公钥认证是开启的（通常默认为 yes）。
-    PubkeyAuthentication yes
-    ```
+```bash
+ssh-copy-id user@server_ip
+```
 
-    - `PermitRootLogin prohibit-password`：这个设置非常有用，它阻止了 `root` 账户使用密码登录，但保留了通过 SSH 密钥以 `root` 身份登录的能力。
-    - `PasswordAuthentication no`：这是核心安全设置，它会全局禁用基于密码的登录方式。
-    - `PubkeyAuthentication yes`：明确声明开启基于公钥的认证。
+## 禁用密码登录
 
-3. **重启SSH服务**
+编辑 SSH 服务端配置：
 
-    保存并关闭配置文件后，需要重启 SSH 服务以使新的配置生效。
+```bash
+vim /etc/ssh/sshd_config
+```
 
-    ```bash
-    systemctl restart sshd
-    ```
+推荐配置：
 
-    现在，当您尝试使用密码登录服务器时，将会被拒绝访问，只有持有正确私钥的用户才能成功登录。
+```ini
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitRootLogin prohibit-password
+```
 
-## 总结
+配置含义：
 
-通过以上四个简单的步骤，我们不仅为服务器配置了完整的中文支持环境和正确的时区，还通过禁用密码登录极大地增强了其安全性。这些基础配置虽然简单，但对于服务器的长期稳定运行和安全维护至关重要，建议在每一台新服务器上都完成这些初始化设置。
+- `PubkeyAuthentication yes`：允许公钥认证。
+- `PasswordAuthentication no`：禁止所有用户使用密码登录。
+- `PermitRootLogin prohibit-password`：允许 `root` 使用密钥登录，但禁止 `root` 密码登录。
+
+先检查配置语法：
+
+```bash
+sshd -t
+```
+
+确认无输出后重启服务：
+
+```bash
+systemctl restart ssh
+```
+
+部分系统服务名可能是 `sshd`：
+
+```bash
+systemctl restart sshd
+```
+
+## 验证与回滚
+
+验证密钥登录：
+
+```bash
+ssh user@server_ip
+```
+
+验证密码登录是否被拒绝：
+
+```bash
+ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no user@server_ip
+```
+
+如果新窗口无法登录，不要关闭旧窗口。立即回到旧窗口恢复：
+
+```ini
+PasswordAuthentication yes
+```
+
+然后重启 SSH 服务。
+
+## 初始化检查清单
+
+- `locale` 输出包含 `zh_CN.UTF-8`。
+- `date` 显示为预期时区时间。
+- `timedatectl` 显示 `Time zone: Asia/Shanghai`。
+- 新 SSH 窗口可以使用密钥登录。
+- 密码登录已被拒绝。
+
+完成这些基础项后，服务器的日志、显示和远程访问会更可控，后续部署 Docker、Nginx、数据库或业务服务也更稳。

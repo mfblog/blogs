@@ -1,120 +1,147 @@
 ---
 title: "🐧 Debian 12 Docker 指南"
 outline: deep
-desc: "Debian 12 下快速部署 Docker Engine 与 Docker Compose 的操作手册"
+desc: "Debian 12 下安装 Docker Engine、Compose 插件、镜像源与常用维护命令"
 tags: "Debian/Docker"
 updateTime: "2025-11-06 14:53:16"
 ---
 
 # 🐧 Debian 12 Docker 指南
 
-::: warning 操作权限
+这篇文章记录 Debian 12 上安装 Docker Engine 和 Docker Compose 插件的标准流程，并补充镜像源、普通用户权限、验证和维护命令。
 
-本文默认在 **root 用户** 下执行所有命令；若使用普通用户，请在需要的命令前补充 `sudo` 并确保拥有相应权限。
+::: warning 权限说明
+
+本文默认以 `root` 用户执行。普通用户请在命令前加 `sudo`，并确认自己拥有系统管理权限。
 
 :::
 
-## 系统准备
+## 安装前准备
 
-::: tip 基础环境更新
-
-确保系统库为最新，避免旧版本依赖阻塞 Docker 安装：
+更新系统并安装仓库依赖：
 
 ```bash
-apt update && apt upgrade -y
+apt update
+apt upgrade -y
 apt install -y ca-certificates curl gnupg lsb-release
 ```
+
+如果曾经安装过 Debian 仓库中的旧版 Docker，可以先清理旧包：
+
+```bash
+apt remove -y docker docker-engine docker.io containerd runc || true
+```
+
+::: tip 数据不会自动删除
+
+上面的命令通常只移除软件包，不会主动删除 `/var/lib/docker`。如果机器上已有重要容器数据，升级或重装前仍建议先备份。
 
 :::
 
 ## 添加 Docker 官方软件源
 
-::: warning 注意
-
-若之前安装过社区版本 Docker，请先执行 `apt remove docker docker-engine docker.io containerd runc` 彻底清理。
-
-:::
+创建 keyrings 目录并导入 GPG 密钥：
 
 ```bash
-# 导入官方 GPG 密钥
 install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/debian/gpg \
+  | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 chmod a+r /etc/apt/keyrings/docker.gpg
+```
 
-# 配置仓库
+写入 Docker 官方仓库：
+
+```bash
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo $VERSION_CODENAME) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  >/etc/apt/sources.list.d/docker.list
 
 apt update
 ```
 
-## 🐳 安装 Docker Engine
-
-::: details 安装核心组件
+## 安装 Docker Engine
 
 ```bash
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# 启动并设置开机自启
-systemctl enable --now docker
-
-# 验证版本与运行状态
-docker --version
-systemctl status docker
+apt install -y \
+  docker-ce \
+  docker-ce-cli \
+  containerd.io \
+  docker-buildx-plugin \
+  docker-compose-plugin
 ```
 
-:::
+启动并设置开机自启：
 
-::: tip 配置非 root 用户使用 Docker
+```bash
+systemctl enable --now docker
+```
 
-如需让普通用户直接运行 Docker，请将其加入 `docker` 用户组：
+验证：
+
+```bash
+docker --version
+docker compose version
+systemctl status docker --no-pager
+```
+
+## 允许普通用户使用 Docker
+
+如果不想每次都使用 `sudo docker`，可以把用户加入 `docker` 组：
 
 ```bash
 TARGET_USER="your_username"
 usermod -aG docker "$TARGET_USER"
-su - "$TARGET_USER"
-docker info  # 以目标用户验证权限
 ```
+
+重新登录该用户后验证：
+
+```bash
+docker info
+```
+
+::: danger 权限风险
+
+`docker` 组成员几乎等同于拥有 root 权限。只给可信用户加入该组，不要把它当作普通应用权限。
 
 :::
 
-## 📦 Docker Compose 安装
+## 配置镜像源
 
-::: tip 推荐方案
-
-Debian 12 已内置 Compose 插件，通过 `docker compose` 命令调用，功能等价于独立版：
+网络环境较慢时，可以配置可用的镜像加速源。请替换为自己维护或可信的镜像地址。
 
 ```bash
-docker compose version
+mkdir -p /etc/docker
+tee /etc/docker/daemon.json >/dev/null <<'EOF'
+{
+  "registry-mirrors": [
+    "https://<your-registry-mirror>"
+  ]
+}
+EOF
+
+systemctl restart docker
 ```
 
-:::
-
-::: details 可选：安装独立二进制
-
-若需要固定版本或离线环境，可手动下载：
+验证：
 
 ```bash
-DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-mkdir -p $DOCKER_CONFIG/cli-plugins
-curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 \
-  -o $DOCKER_CONFIG/cli-plugins/docker-compose
-chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-docker compose version
+docker info | grep -A 5 "Registry Mirrors"
 ```
 
-:::
-
-## 🚀 快速验证
+## 快速运行测试
 
 ```bash
-# 运行 hello-world 容器验证引擎
 docker run --rm hello-world
+```
 
-# 创建示例 compose 应用
-mkdir -p ~/compose-demo && cd ~/compose-demo
-cat <<'EOF' > docker-compose.yml
+创建一个 Compose 示例：
+
+```bash
+mkdir -p ~/compose-demo
+cd ~/compose-demo
+
+tee docker-compose.yml >/dev/null <<'EOF'
 services:
   redis:
     image: redis:alpine
@@ -127,28 +154,38 @@ docker compose ps
 docker compose down
 ```
 
-## 常用维护操作
-
-::: tip 服务管理
+## 常用维护命令
 
 ```bash
-# 服务控制
-systemctl restart docker
-systemctl stop docker
+# 查看 Docker 占用
+docker system df
 
-# 清理无用资源
+# 清理未使用的镜像、容器、网络和构建缓存
 docker system prune -f
 
-# 查看日志
-journalctl -u docker --since "10 minutes ago"
+# 查看服务日志
+journalctl -u docker --since "30 minutes ago" --no-pager
+
+# 重启 Docker
+systemctl restart docker
 ```
 
+如果要清理未使用的数据卷，需要额外确认：
+
+```bash
+docker volume ls
+docker system prune --volumes
+```
+
+::: warning 卷清理提醒
+
+数据卷可能保存数据库、上传文件或业务状态。执行 `--volumes` 前一定要确认没有误删风险。
+
 :::
 
-::: warning 升级注意事项
+## 升级建议
 
-- 升级前备份关键数据卷与 compose 配置。
-- 生产环境建议锁定主版本，先在测试环境验证再更新。
-- 若启用了镜像加速器，升级后需确认 `/etc/docker/daemon.json` 仍然有效。
-
-:::
+- 生产环境升级前备份 Compose 文件、环境变量和关键数据卷。
+- 先在测试机验证镜像、网络、存储驱动是否正常。
+- 升级后检查 `docker info`、`docker compose version` 和业务容器日志。
+- 如果使用代理或镜像源，确认 `/etc/docker/daemon.json` 与 systemd drop-in 仍然有效。
